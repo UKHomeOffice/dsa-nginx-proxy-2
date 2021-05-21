@@ -13,8 +13,8 @@ workspace:
 steps:
 - name: build_and_test_image
   pull: if-not-exists
-  # image: quay.io/ukhomeofficedigital/centos-base:latest
-  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
+  image: quay.io/ukhomeofficedigital/centos-base:latest
+  #image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
   commands:
   - yum update -y
   - yum install -y -q docker openssl wget
@@ -65,6 +65,7 @@ steps:
 
 services:
 - name: docker
-  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
+  #image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
+  image: quay.io/ukhomeofficedigital/centos-base:latest
 
 ...
