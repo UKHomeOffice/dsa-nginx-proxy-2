@@ -1,47 +1,67 @@
-pipeline:
-  test:
-    image: docker:17.09.0-ce
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - apk update && apk add bash curl
-      - ./run-ci.sh
+---
+kind: pipeline
+name: default
 
-  build_docker_image:
-    image: docker:17.09.0-ce
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - docker build -t nginx:$${DRONE_COMMIT_SHA} .
-    when:
-      event: [push, tag]
-      branch: master
+platform:
+  os: linux
+  arch: amd64
 
-  latest_image_to_quay:
-    image: docker:17.09.0-ce
-    secrets:
-      - docker_password
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - docker login -u="ukhomeofficedigital+drone_nginx" -p=$${DOCKER_PASSWORD} quay.io
-      - docker tag nginx:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/nginx:latest
-      - docker tag nginx:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/nginx:$${DRONE_COMMIT_SHA}
-      - docker push quay.io/ukhomeofficedigital/nginx:latest
-      - docker push quay.io/ukhomeofficedigital/nginx:$${DRONE_COMMIT_SHA}
-    when:
-      event: push
-      branch: master
- 
-  tag_image_to_quay:
-    image: docker:17.09.0-ce
-    secrets:
-      - docker_password
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - docker login -u="ukhomeofficedigital+drone_nginx" -p=$${DOCKER_PASSWORD} quay.io
-      - docker tag nginx:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/nginx:$${DRONE_TAG}
-      - docker push quay.io/ukhomeofficedigital/nginx:$${DRONE_TAG}
-    when:
-      event: tag
+steps:
+- name: test
+  pull: if-not-exists
+  image: docker:17.09.0-ce
+  commands:
+  - apk update && apk add bash curl
+  - ./run-ci.sh
+  environment:
+    DOCKER_HOST: tcp://172.17.0.1:2375
+
+- name: build_docker_image
+  pull: if-not-exists
+  image: docker:17.09.0-ce
+  commands:
+  - docker build -t nginx:$${DRONE_COMMIT_SHA} .
+  environment:
+    DOCKER_HOST: tcp://172.17.0.1:2375
+  when:
+    branch:
+    - master
+    event:
+    - push
+    - tag
+
+- name: latest_image_to_quay
+  pull: if-not-exists
+  image: docker:17.09.0-ce
+  commands:
+  - docker login -u="ukhomeofficedigital+drone_nginx" -p=$${DOCKER_PASSWORD} quay.io
+  - docker tag nginx:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/nginx:latest
+  - docker tag nginx:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/nginx:$${DRONE_COMMIT_SHA}
+  - docker push quay.io/ukhomeofficedigital/nginx:latest
+  - docker push quay.io/ukhomeofficedigital/nginx:$${DRONE_COMMIT_SHA}
+  environment:
+    DOCKER_HOST: tcp://172.17.0.1:2375
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+  when:
+    branch:
+    - master
+    event:
+    - push
+
+- name: tag_image_to_quay
+  pull: if-not-exists
+  image: docker:17.09.0-ce
+  commands:
+  - docker login -u="ukhomeofficedigital+drone_nginx" -p=$${DOCKER_PASSWORD} quay.io
+  - docker tag nginx:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/nginx:$${DRONE_TAG}
+  - docker push quay.io/ukhomeofficedigital/nginx:$${DRONE_TAG}
+  environment:
+    DOCKER_HOST: tcp://172.17.0.1:2375
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+  when:
+    event:
+    - tag
+
+...
