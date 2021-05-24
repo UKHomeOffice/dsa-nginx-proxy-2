@@ -31,6 +31,7 @@ steps:
     branch:
     - master
     event:
+    - pull_request
     - push
     - tag
 
@@ -52,6 +53,7 @@ steps:
     branch:
     - master
     event:
+    - pull_request
     - push
 
 - name: tag_image_to_quay
@@ -68,7 +70,7 @@ steps:
       from_secret: DOCKER_TOKEN
   when:
     event:
-    - push
+    #- push
     - tag
 
 services:
