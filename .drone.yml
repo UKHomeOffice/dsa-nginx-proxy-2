@@ -29,7 +29,7 @@ steps:
     # DOCKER_HOST: tcp://172.17.0.1:2375
   when:
     branch:
-    - master
+    - main
     event:
     - pull_request
     - push
@@ -51,7 +51,7 @@ steps:
       from_secret: DOCKER_TOKEN
   when:
     branch:
-    - master
+    - main
     event:
     - pull_request
     - push
@@ -70,7 +70,7 @@ steps:
       from_secret: DOCKER_TOKEN
   when:
     event:
-    #- push
+    - push
     - tag
 
 services:
