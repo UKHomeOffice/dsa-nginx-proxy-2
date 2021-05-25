@@ -42,9 +42,8 @@ steps:
   commands:
   - docker login -u="ukhomeofficedigital+dsa_shared_service" -p=$${DOCKER_TOKEN} quay.io
   - docker tag quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/dsa-nginx-proxy:latest
-  - docker tag quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_COMMIT_SHA}
-  - docker push quay.io/ukhomeofficedigital/dsa-nginx-proxy:latest
   - docker push quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_COMMIT_SHA}
+  - docker push quay.io/ukhomeofficedigital/dsa-nginx-proxy:latest
   environment:
     #DOCKER_HOST: tcp://172.17.0.1:2375
     DOCKER_TOKEN:
@@ -57,109 +56,23 @@ steps:
     - push
 
 # - name: tag_image_to_quay
-#  pull: if-not-exists
-#  #image: docker:17.09.0-ce
-#  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
-#  commands:
-#  - docker login -u="ukhomeofficedigital+dsa_shared_service" -p=$${DOCKER_TOKEN} quay.io
-#  - docker tag quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_TAG}
-#  - docker push quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_TAG}
-#  environment:
-    #DOCKER_HOST: tcp://172.17.0.1:2375
-#    DOCKER_TOKEN:
-#      from_secret: DOCKER_TOKEN
-#  when:
-#    event:
-#    - push
-#    - tag
+#   pull: if-not-exists
+#   #image: docker:17.09.0-ce
+#   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
+#   commands:
+#   - docker login -u="ukhomeofficedigital+dsa_shared_service" -p=$${DOCKER_TOKEN} quay.io
+#   - docker tag quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/dsa-nginx-proxy:latest
+#   - docker push quay.io/ukhomeofficedigital/dsa-nginx-proxy:latest
+#   environment:
+#     #DOCKER_HOST: tcp://172.17.0.1:2375
+#     DOCKER_TOKEN:
+#       from_secret: DOCKER_TOKEN
+#   when:
+#     event:
+#     - push
+#     - tag
 
 services:
 - name: docker
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
-
-
----
-kind: pipeline
-name: cron
-type: kubernetes
-
-platform:
-  os: linux
-  arch: amd64
-
-steps:
-- name: test
-  pull: if-not-exists
-  #image: docker:17.09.0-ce
-  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
-  commands:
-  - apk update && apk add bash curl
-  - ./run-ci.sh
-  environment:
-    # DOCKER_HOST: tcp://172.17.0.1:2375
-
-- name: build_docker_image
-  pull: if-not-exists
-  #image: docker:17.09.0-ce
-  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
-  commands:
-  # - docker build -t nginx:$${DRONE_COMMIT_SHA} .
-  - docker build -t quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_COMMIT_SHA} .
-  environment:
-    # DOCKER_HOST: tcp://172.17.0.1:2375
-  when:
-    branch:
-    - main
-    event:
-    - pull_request
-    - push
-    - tag
-
-- name: latest_image_to_quay
-  pull: if-not-exists
-  #image: docker:17.09.0-ce
-  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
-  commands:
-  - docker login -u="ukhomeofficedigital+dsa_shared_service" -p=$${DOCKER_TOKEN} quay.io
-  - docker tag quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/dsa-nginx-proxy:latest
-  - docker tag quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_COMMIT_SHA}
-  - docker push quay.io/ukhomeofficedigital/dsa-nginx-proxy:latest
-  - docker push quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_COMMIT_SHA}
-  environment:
-    #DOCKER_HOST: tcp://172.17.0.1:2375
-    DOCKER_TOKEN:
-      from_secret: DOCKER_TOKEN
-  when:
-    branch:
-    - main
-    event:
-    - pull_request
-    - push
-
-# - name: tag_image_to_quay
-#  pull: if-not-exists
-#  #image: docker:17.09.0-ce
-#  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
-#  commands:
-#  - docker login -u="ukhomeofficedigital+dsa_shared_service" -p=$${DOCKER_TOKEN} quay.io
-#  - docker tag quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_TAG}
-#  - docker push quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_TAG}
-#  environment:
-    #DOCKER_HOST: tcp://172.17.0.1:2375
-#    DOCKER_TOKEN:
-#      from_secret: DOCKER_TOKEN
-#  when:
-#    event:
-#    - push
-#    - tag
-
-services:
-- name: docker
-  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
-
-trigger:
-  event:
-  - cron
-  cron:
-  - hourly-update-build
 ...
