@@ -72,7 +72,7 @@ steps:
   when:
     event:
     - push
-    - tag
+    #- tag
 
 services:
 - name: docker
