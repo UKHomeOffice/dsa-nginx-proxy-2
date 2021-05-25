@@ -5,7 +5,7 @@ RUN apk upgrade --no-cache && \
     install -d -g nginx -o nginx /run/nginx && \
     chown -R nginx:nginx /etc/nginx /var/log/nginx
 
-RUN apk update --available && sync
+RUN apk update && sync
 
 COPY bin/run.sh /run.sh
 COPY conf.d /etc/nginx/conf.d
