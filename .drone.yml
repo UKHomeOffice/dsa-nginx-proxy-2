@@ -114,6 +114,7 @@ steps:
     - push
     - tag
 
+
 - name: latest_image_to_quay
   pull: if-not-exists
   #image: docker:17.09.0-ce
