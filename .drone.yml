@@ -106,13 +106,13 @@ steps:
   - docker build -t quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_COMMIT_SHA} .
   environment:
     # DOCKER_HOST: tcp://172.17.0.1:2375
-  when:
-    branch:
-    - main
-    event:
-    - pull_request
-    - push
-    - tag
+  #when:
+  #  branch:
+  # - main
+  #  event:
+  #  - pull_request
+  #  - push
+  #  - tag
 
 
 - name: latest_image_to_quay
@@ -128,12 +128,12 @@ steps:
     #DOCKER_HOST: tcp://172.17.0.1:2375
     DOCKER_TOKEN:
       from_secret: DOCKER_TOKEN
-  when:
-    branch:
-    - main
-    event:
-    - pull_request
-    - push
+  #when:
+  #  branch:
+  #  - main
+  #  event:
+  #  - pull_request
+  #  - push
 
 # - name: tag_image_to_quay
 #   pull: if-not-exists
