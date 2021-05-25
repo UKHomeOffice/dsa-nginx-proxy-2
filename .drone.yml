@@ -70,7 +70,7 @@ steps:
       from_secret: DOCKER_TOKEN
   when:
     event:
-    - push
+    #- push
     - tag
 
 services:
