@@ -63,7 +63,7 @@ steps:
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
   commands:
   - docker login -u="ukhomeofficedigital+dsa_shared_service" -p=$${DOCKER_TOKEN} quay.io
-  - docker tag quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_TAG}
+  - docker tag quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/nginx:$${DRONE_TAG}
   - docker push quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_TAG}
   environment:
     #DOCKER_HOST: tcp://172.17.0.1:2375
@@ -72,7 +72,7 @@ steps:
   when:
     event:
     - push
-    #- tag
+    - tag
 
 services:
 - name: docker
