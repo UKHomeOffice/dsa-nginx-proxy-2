@@ -64,7 +64,7 @@ steps:
   commands:
   - docker login -u="ukhomeofficedigital+dsa_shared_service" -p=$${DOCKER_TOKEN} quay.io
   - docker tag quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/dsa-nginx-proxy:latest
-  - docker push quay.io/ukhomeofficedigital/dsa-nginx-proxy:$${DRONE_TAG}
+  - docker push quay.io/ukhomeofficedigital/dsa-nginx-proxy:latest
   environment:
     #DOCKER_HOST: tcp://172.17.0.1:2375
     DOCKER_TOKEN:
